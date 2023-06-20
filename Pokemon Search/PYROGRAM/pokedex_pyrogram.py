@@ -2,7 +2,6 @@
 # CREATED BY https://www.github.com/SOME-1HING
 # PROVIDED BY https://t.me/ProjectCodeX
 
-
 import requests
 from pyrogram import Client, filters
 from pyrogram.types import (
@@ -12,9 +11,10 @@ from pyrogram.types import (
     Message,
 )
 
+# REPO => Your Bots File Name
 from REPO import app
 
-
+# Function to retrieve Pokemon information from the API
 def get_pokemon_info(name_or_id):
     base_url = "https://sugoi-api.vercel.app/pokemon"
     params = {}
@@ -33,7 +33,7 @@ def get_pokemon_info(name_or_id):
 
     return None
 
-
+# Command handler for the /pokedex command
 @app.on_message(filters.command("pokedex"))
 async def pokedex_command(client: Client, message: Message) -> None:
     try:
@@ -42,6 +42,7 @@ async def pokedex_command(client: Client, message: Message) -> None:
             pokemon_info = get_pokemon_info(pokemon_name_or_id)
 
             if pokemon_info:
+                # Extract relevant information from the API response
                 pokemon = pokemon_info.get("name")
                 pokedex_id = pokemon_info.get("id")
                 height = pokemon_info.get("height")
@@ -58,6 +59,7 @@ async def pokedex_command(client: Client, message: Message) -> None:
                     "front_default"
                 ]
 
+                # Create the caption for the message
                 caption = f"""
 ====[ 【Ｐｏｋéｄｅｘ】 ]====
 
@@ -70,6 +72,7 @@ async def pokedex_command(client: Client, message: Message) -> None:
 **Weight ➢** `{weight}`
 """
 
+                # Create an inline keyboard for additional functionality
                 inline_keyboard = [
                     [
                         InlineKeyboardButton(
@@ -79,6 +82,7 @@ async def pokedex_command(client: Client, message: Message) -> None:
                 ]
                 reply_markup = InlineKeyboardMarkup(inline_keyboard)
 
+                # Reply with a photo and caption, along with the inline keyboard
                 await message.reply_photo(
                     photo=image_url, caption=caption, reply_markup=reply_markup
                 )
@@ -91,7 +95,7 @@ async def pokedex_command(client: Client, message: Message) -> None:
     except Exception as e:
         await message.reply_text(f"An error occurred: {str(e)}")
 
-
+# Callback query handler for the "STATS" button
 @app.on_callback_query(filters.regex("^stats_"))
 async def show_stats(client: Client, callback_query: CallbackQuery) -> None:
     try:
@@ -99,14 +103,17 @@ async def show_stats(client: Client, callback_query: CallbackQuery) -> None:
         pokemon_info = get_pokemon_info(pokemon_name_or_id)
 
         if pokemon_info:
+            # Extract the stats information from the API response
             stats = pokemon_info.get("stats")
             stats_text = "**Stats ➢**\n\n"
 
+            # Format the stats information into text
             for stat in stats:
                 stat_name = stat["stat"]["name"]
                 base_stat = stat["base_stat"]
                 stats_text += f"{stat_name.upper()}: {base_stat}\n"
 
+            # Edit the message with the updated stats information
             await callback_query.edit_message_text(stats_text)
         else:
             await callback_query.message.reply_text("Pokemon not found.")
