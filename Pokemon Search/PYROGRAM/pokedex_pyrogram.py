@@ -1,3 +1,8 @@
+# SOURCE https://github.com/Team-ProjectCodeX
+# CREATED BY https://www.github.com/SOME-1HING
+# PROVIDED BY https://t.me/ProjectCodeX
+
+
 import requests
 from pyrogram import Client, filters
 from pyrogram.types import (
